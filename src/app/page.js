@@ -18,7 +18,15 @@ export default function Home() {
   ]);
   const [savedNotes, setSavedNotes] = useLocalStorage("savedNotes");
   const [searchText, setSearchText] = useState("");
-  let notesFromStorage = useReadLocalStorage("savedNotes");
+  const notesFromStorage = useReadLocalStorage("savedNotes");
+
+  useEffect(() => {
+    if (notesFromStorage) {
+      const storageNotes = JSON.parse(notesFromStorage);
+      setNotes(storageNotes);
+    }
+  }, []);
+
   const addNote = () => {
     const newNote = {
       id: Date.now(),
@@ -32,6 +40,8 @@ export default function Home() {
   const removeNote = (noteId) => {
     const updatedNotes = notes.filter((note) => note.id !== noteId);
     setNotes(updatedNotes);
+    const updatedNotesString = JSON.stringify(updatedNotes);
+    setSavedNotes(updatedNotesString);
   };
 
   const onType = (editMeId, updatedKey, updatedValue) => {
@@ -76,13 +86,6 @@ export default function Home() {
     let notesToAdd = JSON.stringify(notes);
     setSavedNotes(notesToAdd);
   };
-
-  useEffect(() => {
-    if (notesFromStorage) {
-      const savedNotesToUse = JSON.parse(notesFromStorage);
-      setNotes(savedNotesToUse);
-    }
-  }, []);
 
   return (
     <main className="main">
